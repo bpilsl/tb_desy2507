@@ -13,8 +13,8 @@ def runCorry(config, files, log, additional=None):
         log: Log file where the output will be saved.
         additional: Optional string with additional arguments to pass to Corry.
     """
-    # cmd = f'corry -c {config} -o EventLoaderEUDAQ2.file_name={files[0]} -o EventLoaderEUDAQ2:TLU_0.file_name={files[1]} -o EventLoaderEUDAQ2:RD50_MPWx_0.file_name={files[2]}   -o EventLoaderMuPixTelescope.input_file={files[3]} -l {log} '
-    cmd = f'corry -c {config} -o EventLoaderEUDAQ2.file_name={files[0]} -o EventLoaderEUDAQ2:TLU_0.file_name={files[1]} -o EventLoaderEUDAQ2:RD50_MPWx_0.file_name={files[2]} -l {log} '
+    cmd = f'corry -c {config} -o EventLoaderEUDAQ2.file_name={files[0]} -o EventLoaderEUDAQ2:TLU_0.file_name={files[1]} -o EventLoaderEUDAQ2:RD50_MPWx_0.file_name={files[2]}   -o EventLoaderMuPixTelescope.input_file={files[3]} -l {log} '
+    # cmd = f'corry -c {config} -o EventLoaderEUDAQ2.file_name={files[0]} -o EventLoaderEUDAQ2:TLU_0.file_name={files[1]} -o EventLoaderEUDAQ2:RD50_MPWx_0.file_name={files[2]} -l {log} '
     if additional:
         cmd += additional
     print('\n\n ####### RUNNING: ', cmd,'\n\n')  
@@ -40,11 +40,11 @@ def main():
 
 
         telDir = 'data/adenium'
-        tluDir = 'data/tlu'
-        telepixDir = 'data/telepix2'
-        dutDir = 'data/mpw4'
+        tluDir = 'data/tlu' 
+        telepixDir = 'data/telepix'       
+        dutDir = 'data/mpw4'        
 
-        dirs = [telDir, tluDir, telepixDir, dutDir]
+        dirs = [telDir, tluDir, dutDir]        
 
         files = []
 
@@ -52,13 +52,19 @@ def main():
         # We use globbing to find files matching the specific run number pattern
         for d in dirs:
             print(f'Globbing for files in directory {d} with run number {runNmb:06}')
-            files_found = glob(f'{d}/*run{runNmb:06}*.raw')
+            files_found = glob(f'{d}/*run*{runNmb:06}*')
             if files_found:
                 files.append(files_found[0])  # Append the first matched file
             else:
                 print(f"No files found for run {runNmb:06} in {d}")
                 continue
                 # sys.exit(1)  # Exit if no matching files are found
+        
+        tpData = glob(f'{telepixDir}/*run*{runNmb}*.blck')
+        tpData = tpData[0].split('/')[-1]
+        files.append(tpData)
+
+        print('found ', files)
 
         # # Globbing the telepix2 block file for the given run number
         # print(f'Globbing for telepix2 block file for run {runNmb:06}')
